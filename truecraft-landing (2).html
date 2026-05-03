@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrueCraft — Human Art. Verified.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0a0d0e;
+  --off-black: #0e1214;
+  --panel: #131a1d;
+  --cream: #e8f4f8;
+  --pale: #b0cfd8;
+  --red: #1aabcc;
+  --orange: #12c4e0;
+  --gold: #1fd4c8;
+  --green: #178a7a;
+  --teal: #1aabcc;
+  --muted: #4a7a88;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--cream);
+  font-family: 'Syne', sans-serif;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+.cursor {
+  position: fixed;
+  width: 12px; height: 12px;
+  background: var(--red);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s, background 0.3s;
+  mix-blend-mode: screen;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9000;
+  opacity: 0.4;
+  animation: grain 0.5s steps(2) infinite;
+}
+@keyframes grain {
+  0%{transform:translate(0,0)} 25%{transform:translate(-2px,2px)}
+  50%{transform:translate(2px,-1px)} 75%{transform:translate(-1px,-2px)} 100%{transform:translate(1px,1px)}
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 8000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.5rem 3rem;
+}
+nav::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,8,4,0.95) 0%, transparent 100%);
+  pointer-events: none;
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem; letter-spacing: 0.08em;
+  color: var(--cream); position: relative; z-index: 1;
+  text-decoration: none;
+}
+.nav-logo .dot { color: var(--red); }
+.nav-logo-img { height: 2.2rem; width: auto; display: block; object-fit: contain; }
+.nav-logo-fallback { display: none; }
+.nav-logo-fallback .dot { color: var(--red); }
+.nav-right { display: flex; align-items: center; gap: 2.5rem; position: relative; z-index: 1; }
+.nav-link {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--pale); text-decoration: none; transition: color 0.2s;
+}
+.nav-link:hover { color: var(--cream); }
+.nav-btn {
+  background: var(--red); color: var(--cream);
+  font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.1em;
+  padding: 0.55rem 1.6rem; text-decoration: none; transition: background 0.25s, transform 0.2s;
+  border: none; cursor: pointer;
+}
+.nav-btn:hover { background: var(--orange); transform: scale(1.03); }
+
+/* HERO */
+.hero {
+  min-height: 100vh; position: relative;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 2rem 3rem 5rem; overflow: hidden;
+}
+.hero-bg-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  z-index: 0; pointer-events: none;
+  opacity: 0.45;
+}
+.hero-bg-img-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,13,14,0.4) 0%, rgba(10,13,14,0.6) 50%, rgba(10,13,14,0.92) 100%);
+  z-index: 1; pointer-events: none;
+}
+.splash {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); pointer-events: none; z-index: 2;
+}
+.splash-1 {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(26,171,204,0.20) 0%, transparent 70%);
+  top: -200px; right: -100px;
+  animation: drift1 12s ease-in-out infinite alternate;
+}
+.splash-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(31,212,200,0.12) 0%, transparent 70%);
+  bottom: 100px; left: -100px;
+  animation: drift2 15s ease-in-out infinite alternate;
+}
+.splash-3 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(26,171,204,0.10) 0%, transparent 70%);
+  top: 40%; left: 40%;
+  animation: drift1 18s ease-in-out infinite alternate-reverse;
+}
+@keyframes drift1 { from{transform:translate(0,0) scale(1)} to{transform:translate(60px,40px) scale(1.1)} }
+@keyframes drift2 { from{transform:translate(0,0) rotate(0deg)} to{transform:translate(-40px,60px) rotate(15deg)} }
+.hero-bg-text {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-52%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(14rem, 25vw, 28rem);
+  color: rgba(240,232,216,0.03);
+  white-space: nowrap; pointer-events: none; user-select: none; line-height: 1; z-index: 2;
+}
+.hero-rule {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.hero-rule::before {
+  content: ''; position: absolute;
+  width: 1px; height: 200%;
+  background: linear-gradient(180deg, transparent, rgba(26,171,204,0.25), transparent);
+  left: 33%; top: -50%; transform: rotate(12deg);
+}
+.hero-rule::after {
+  content: ''; position: absolute;
+  width: 1px; height: 200%;
+  background: linear-gradient(180deg, transparent, rgba(31,212,200,0.12), transparent);
+  right: 22%; top: -30%; transform: rotate(-8deg);
+}
+.hero-top {
+  position: relative; z-index: 3;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: auto; padding-top: 8rem;
+}
+.hero-badge {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(26,171,204,0.3);
+  padding: 0.5rem 1rem; background: rgba(26,171,204,0.06);
+}
+.bdot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+.hero-counter { text-align: right; }
+.hero-counter-num { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; color: var(--red); line-height: 1; display: block; }
+.hero-counter-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+.hero-bottom { position: relative; z-index: 3; }
+.hero-eyebrow {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 1.2rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.hero-eyebrow::before { content: ''; width: 3rem; height: 1px; background: var(--red); }
+.hero-h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(5rem, 14vw, 16rem);
+  letter-spacing: -0.02em; line-height: 0.88;
+  color: var(--cream); margin-bottom: 0.15em;
+}
+.hero-h1-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-weight: 300;
+  font-size: clamp(2rem, 5vw, 5rem);
+  color: var(--gold); line-height: 1; margin-bottom: 2.5rem; display: block;
+}
+.hero-foot {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 2rem; flex-wrap: wrap;
+}
+.hero-desc { font-size: 1rem; color: var(--pale); line-height: 1.75; max-width: 38ch; font-weight: 400; }
+.hero-ctas { display: flex; gap: 1rem; align-items: center; flex-shrink: 0; }
+.btn-big {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.1em;
+  background: var(--red); color: var(--cream); padding: 1rem 2.8rem;
+  text-decoration: none; transition: background 0.25s, transform 0.2s; display: inline-block;
+}
+.btn-big:hover { background: var(--orange); transform: scale(1.03); }
+.btn-ghost {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.1em;
+  color: var(--cream); border: 1px solid rgba(240,232,216,0.25);
+  padding: 1rem 2.2rem; text-decoration: none; transition: border-color 0.25s, background 0.25s; display: inline-block;
+}
+.btn-ghost:hover { border-color: var(--cream); background: rgba(240,232,216,0.05); }
+.scroll-hint {
+  position: absolute; right: 3rem; bottom: 3rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem; z-index: 2;
+}
+.scroll-line {
+  width: 1px; height: 4rem;
+  background: linear-gradient(180deg, transparent, var(--muted));
+  animation: sp 2s ease-in-out infinite;
+}
+@keyframes sp { 0%,100%{opacity:0.3} 50%{opacity:1} }
+.scroll-label {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); writing-mode: vertical-rl;
+}
+
+/* TICKER */
+.ticker {
+  background: var(--red); color: var(--cream); padding: 0.9rem 0;
+  overflow: hidden; white-space: nowrap;
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.12em;
+}
+.ticker-inner { display: inline-flex; animation: tick 22s linear infinite; }
+.ticker-item { padding: 0 3rem; }
+.ticker-item::after { content: '◆'; margin-left: 3rem; opacity: 0.5; }
+@keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* MANIFESTO */
+.manifesto {
+  padding: 8rem 3rem;
+  display: grid; grid-template-columns: 2fr 3fr; gap: 6rem; align-items: start;
+  border-bottom: 1px solid rgba(240,232,216,0.07);
+}
+.manifesto-label { position: sticky; top: 8rem; }
+.section-num {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 8rem; color: rgba(240,232,216,0.05); line-height: 1; margin-bottom: -2rem;
+}
+.section-tag {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 1rem;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem;
+  letter-spacing: 0.04em; line-height: 1; color: var(--cream);
+}
+.manifesto-body { padding-top: 1rem; }
+.manifesto-quote {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-weight: 300; font-size: 2.2rem; line-height: 1.4; color: var(--cream);
+  margin-bottom: 3rem; border-left: 2px solid var(--red); padding-left: 2rem;
+}
+.manifesto-text { font-size: 1rem; color: var(--pale); line-height: 1.85; margin-bottom: 1.5rem; }
+.stat-row {
+  display: flex; gap: 0; margin-top: 4rem;
+  border: 1px solid rgba(240,232,216,0.08);
+}
+.stat-cell {
+  flex: 1; padding: 2rem;
+  border-right: 1px solid rgba(240,232,216,0.08);
+}
+.stat-cell:last-child { border-right: none; }
+.stat-big {
+  font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; line-height: 1;
+  color: var(--orange); display: block; margin-bottom: 0.5rem;
+}
+.stat-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; font-weight: 400; }
+
+/* BENTO */
+.bento-section { padding: 6rem 3rem; border-bottom: 1px solid rgba(240,232,216,0.07); }
+.bento-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+.bento-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem,6vw,6rem); letter-spacing: 0.02em; line-height: 1; color: var(--cream); }
+.bento-sub { font-size: 0.9rem; color: var(--muted); max-width: 30ch; text-align: right; line-height: 1.6; }
+.bento-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+.bento-card {
+  background: var(--panel); padding: 2.5rem; position: relative; overflow: hidden;
+  transition: background 0.3s;
+}
+.bento-card:hover { background: #1a2428; }
+.bento-card::before {
+  content: attr(data-num); position: absolute; bottom: -1rem; right: 1rem;
+  font-family: 'Cormorant Garamond', serif; font-size: 8rem; font-weight: 600;
+  color: rgba(240,232,216,0.03); line-height: 1; pointer-events: none;
+}
+.bc-1 { grid-column: span 5; }
+.bc-2 { grid-column: span 4; }
+.bc-3 { grid-column: span 3; }
+.bc-4 { grid-column: span 3; background: var(--red); }
+.bc-4:hover { background: #1488a0; }
+.bc-5 { grid-column: span 5; }
+.bc-6 { grid-column: span 4; background: rgba(26,171,204,0.10); border: 1px solid rgba(26,171,204,0.2); }
+.bento-icon { font-size: 2.2rem; margin-bottom: 1.5rem; display: block; }
+.bento-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.05em; margin-bottom: 0.8rem; color: var(--cream); }
+.bento-desc { font-size: 0.85rem; color: rgba(240,232,216,0.55); line-height: 1.7; }
+.bc-4 .bento-desc { color: rgba(240,232,216,0.8); }
+.uvp-pill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(26,171,204,0.10); border: 1px solid rgba(26,171,204,0.3);
+  padding: 0.4rem 0.9rem; font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-top: 1.5rem;
+}
+
+/* HOW */
+.how-section { padding: 8rem 3rem; border-bottom: 1px solid rgba(240,232,216,0.07); }
+.how-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 4rem; }
+.how-step { padding: 3rem 2rem; border-right: 1px solid rgba(240,232,216,0.07); position: relative; }
+.how-step:last-child { border-right: none; }
+.step-index { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 5rem; color: var(--red); opacity: 0.4; line-height: 1; display: block; margin-bottom: 1.5rem; }
+.step-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.06em; color: var(--cream); margin-bottom: 1rem; }
+.step-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+.step-arrow { position: absolute; top: 3rem; right: -1rem; font-size: 1.2rem; color: var(--red); opacity: 0.5; z-index: 1; }
+.how-step:last-child .step-arrow { display: none; }
+
+/* GALLERY */
+.gallery-strip { overflow: hidden; border-top: 1px solid rgba(240,232,216,0.07); border-bottom: 1px solid rgba(240,232,216,0.07); }
+.gallery-row { display: flex; animation: gscroll 30s linear infinite; width: max-content; }
+.gallery-row-rev { animation-direction: reverse; animation-duration: 25s; }
+@keyframes gscroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.gallery-item {
+  width: 280px; height: 200px; flex-shrink: 0;
+  border-right: 2px solid var(--black); position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  background: #131a1d;
+}
+.gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.gallery-item:hover img { transform: scale(1.05); }
+.gallery-item-label {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 0.6rem 0.8rem;
+  background: linear-gradient(0deg,rgba(10,13,14,0.9),transparent);
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(232,244,248,0.7);
+}
+.vbadge {
+  position: absolute; top: 0.6rem; right: 0.6rem;
+  background: var(--green); color: white;
+  font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em;
+  padding: 0.25rem 0.5rem; text-transform: uppercase;
+}
+
+/* TESTIMONIALS */
+.testimonials { padding: 8rem 3rem; border-bottom: 1px solid rgba(240,232,216,0.07); }
+.testi-header { margin-bottom: 4rem; display: flex; align-items: flex-end; justify-content: space-between; }
+.testi-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+.testi { padding: 3rem; border-right: 1px solid rgba(240,232,216,0.07); position: relative; }
+.testi:last-child { border-right: none; }
+.testi:first-child { background: rgba(200,37,26,0.05); border-top: 2px solid var(--red); }
+.testi-mark { font-family: 'Cormorant Garamond', serif; font-size: 5rem; color: var(--red); opacity: 0.3; line-height: 0.8; margin-bottom: 1rem; display: block; }
+.testi-quote { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: 1.2rem; line-height: 1.65; color: var(--cream); margin-bottom: 2rem; }
+.testi-author { display: flex; align-items: center; gap: 1rem; }
+.testi-avi { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.05em; flex-shrink: 0; }
+.testi:first-child .testi-avi{background:var(--red);color:var(--cream)}
+.testi:nth-child(2) .testi-avi{background:var(--teal);color:var(--cream)}
+.testi:nth-child(3) .testi-avi{background:var(--gold);color:var(--black)}
+.testi-name { font-size: 0.9rem; font-weight: 700; color: var(--cream); display: block; }
+.testi-role { font-size: 0.68rem; font-weight: 400; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+
+/* PRICING */
+.pricing { padding: 8rem 3rem; border-bottom: 1px solid rgba(240,232,216,0.07); }
+.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 4rem; }
+.price-card { background: var(--panel); padding: 3.5rem; position: relative; overflow: hidden; }
+.price-card.featured { background: var(--red); }
+.price-tag { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; display: block; }
+.price-card.featured .price-tag { color: rgba(240,232,216,0.7); }
+.price-name { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 0.05em; color: var(--cream); margin-bottom: 0.5rem; }
+.price-amount { display: flex; align-items: baseline; gap: 0.3rem; margin-bottom: 2.5rem; }
+.price-curr { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--pale); }
+.price-num { font-family: 'Bebas Neue', sans-serif; font-size: 5rem; line-height: 1; color: var(--cream); }
+.price-per { font-size: 0.8rem; color: var(--muted); }
+.price-card.featured .price-per { color: rgba(240,232,216,0.6); }
+.price-features { list-style: none; margin-bottom: 3rem; }
+.price-features li { display: flex; align-items: center; gap: 0.8rem; padding: 0.75rem 0; border-bottom: 1px solid rgba(240,232,216,0.07); font-size: 0.9rem; color: var(--pale); }
+.price-card.featured .price-features li { color: rgba(240,232,216,0.85); border-color: rgba(240,232,216,0.12); }
+.price-features li::before { content: '→'; color: var(--red); font-weight: 700; flex-shrink: 0; }
+.price-card.featured .price-features li::before { color: rgba(240,232,216,0.6); }
+.price-btn { display: block; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.1em; padding: 1rem 2rem; text-decoration: none; transition: all 0.25s; }
+.btn-outline { border: 1px solid rgba(240,232,216,0.2); color: var(--cream); }
+.btn-outline:hover { border-color: var(--cream); background: rgba(240,232,216,0.05); }
+.btn-solid { background: var(--cream); color: var(--red); }
+.btn-solid:hover { background: var(--gold); color: var(--black); }
+
+/* CTA */
+.cta-finale { padding: 10rem 3rem; position: relative; overflow: hidden; text-align: center; }
+.cta-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(200,37,26,0.15) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 20% 30%, rgba(212,160,48,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse 40% 40% at 80% 70%, rgba(26,136,136,0.06) 0%, transparent 60%);
+}
+.cta-inner { position: relative; z-index: 1; }
+.cta-pretitle { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--red); margin-bottom: 2rem; }
+.cta-big { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem,12vw,14rem); letter-spacing: -0.02em; line-height: 0.9; color: var(--cream); margin-bottom: 1rem; }
+.cta-ital { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(1.5rem,3vw,3rem); color: var(--gold); margin-bottom: 3rem; display: block; }
+.cta-body { font-size: 1rem; color: var(--muted); max-width: 46ch; margin: 0 auto 4rem; line-height: 1.7; }
+.cta-actions { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; }
+
+/* CONTACT */
+.contact-section { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(240,232,216,0.07); }
+.contact-left { padding: 6rem 4rem; background: var(--panel); border-right: 1px solid rgba(240,232,216,0.07); }
+.contact-right { padding: 6rem 4rem; }
+.contact-h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; letter-spacing: 0.04em; line-height: 1.05; color: var(--cream); margin-bottom: 1.5rem; }
+.ci-list { margin-top: 3rem; }
+.ci-item { display: flex; gap: 1.5rem; align-items: flex-start; padding: 1.5rem 0; border-bottom: 1px solid rgba(240,232,216,0.06); }
+.ci-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 0.1rem; }
+.ci-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; display: block; }
+.ci-val { font-size: 0.95rem; color: var(--pale); line-height: 1.5; }
+.form { display: flex; flex-direction: column; gap: 1.2rem; }
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.field input, .field select, .field textarea {
+  background: var(--panel); border: 1px solid rgba(240,232,216,0.08);
+  color: var(--cream); font-family: 'Syne', sans-serif; font-size: 0.9rem;
+  padding: 0.9rem 1.1rem; outline: none; transition: border-color 0.25s;
+  resize: none; appearance: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--red); }
+.field select option { background: var(--panel); }
+.form-submit {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.1em;
+  background: var(--red); color: var(--cream); border: none;
+  padding: 1rem 2.5rem; cursor: crosshair; align-self: flex-start; transition: background 0.25s;
+}
+.form-submit:hover { background: var(--orange); }
+
+/* FOOTER */
+footer {
+  background: var(--off-black); border-top: 1px solid rgba(240,232,216,0.06);
+  padding: 3rem; display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1.5rem;
+}
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.08em; color: var(--cream); }
+.footer-logo span { color: var(--red); }
+.footer-logo-img { height: 2rem; width: auto; display: block; object-fit: contain; }
+.footer-logo-fallback { display: none; }
+.footer-logo-fallback span { color: var(--red); }
+.footer-links { display: flex; gap: 2rem; list-style: none; }
+.footer-links a { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold); }
+.footer-copy { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.05em; }
+
+/* FADE IN */
+@keyframes fadeUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+.hero-badge  { animation: fadeUp 0.6s ease 0.3s both; }
+.hero-eyebrow{ animation: fadeUp 0.6s ease 0.5s both; }
+.hero-h1     { animation: fadeUp 0.7s ease 0.65s both; }
+.hero-h1-sub { animation: fadeUp 0.7s ease 0.8s both; }
+.hero-foot   { animation: fadeUp 0.7s ease 0.95s both; }
+
+/* MOBILE */
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem}
+  .nav-link{display:none}
+  .hero{padding:1.5rem 1.5rem 4rem}
+  .hero-h1{font-size:clamp(4rem,18vw,8rem)}
+  .manifesto{grid-template-columns:1fr;gap:3rem;padding:5rem 1.5rem}
+  .bento-section{padding:4rem 1.5rem}
+  .bento-grid{grid-template-columns:1fr 1fr}
+  .bc-1,.bc-2,.bc-3,.bc-4,.bc-5,.bc-6{grid-column:span 1}
+  .bento-header{flex-direction:column;align-items:flex-start;gap:1rem}
+  .bento-sub{text-align:left;max-width:100%}
+  .how-section{padding:5rem 1.5rem}
+  .how-steps{grid-template-columns:1fr 1fr}
+  .testimonials{padding:5rem 1.5rem}
+  .testi-grid{grid-template-columns:1fr}
+  .testi{border-right:none;border-bottom:1px solid rgba(240,232,216,0.07)}
+  .pricing{padding:5rem 1.5rem}
+  .pricing-grid{grid-template-columns:1fr}
+  .cta-finale{padding:6rem 1.5rem}
+  .contact-section{grid-template-columns:1fr}
+  .contact-left,.contact-right{padding:4rem 1.5rem}
+  footer{padding:2rem 1.5rem}
+  .stat-row{flex-direction:column}
+  .stat-cell{border-right:none;border-bottom:1px solid rgba(240,232,216,0.08)}
+  .testi-header{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<nav>
+  <a href="#" class="nav-logo">
+    <!-- LOGO PLACEHOLDER: Replace the img src below with your actual logo file -->
+    <img src="img/TrueCraft_logo.png" alt="TrueCraft Logo" class="nav-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+    <span class="nav-logo-fallback">TRUE<span class="dot">C</span>RAFT</span>
+  </a>
+  <div class="nav-right">
+    <a href="#about" class="nav-link">Manifesto</a>
+    <a href="#features" class="nav-link">Platform</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="#contact" class="nav-link">Contact</a>
+    <a href="#contact" class="nav-btn">Join Now</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- HERO BG IMAGE PLACEHOLDER: Replace src with your actual background image -->
+  <img src="img/TrueCraft_bkg.png" alt="" class="hero-bg-img">
+  <div class="hero-bg-img-overlay"></div>
+  <div class="splash splash-1"></div>
+  <div class="splash splash-2"></div>
+  <div class="splash splash-3"></div>
+  <div class="hero-bg-text">ART</div>
+  <div class="hero-rule"></div>
+
+  <div class="hero-top">
+    <div class="hero-badge"><span class="bdot"></span>Verified Human-Made Art Platform</div>
+    <div class="hero-counter">
+      <span class="hero-counter-num">100% HUMAN</span>
+      <span class="hero-counter-label">Human Art Lives Here</span>
+    </div>
+  </div>
+
+  <div class="hero-bottom">
+    <p class="hero-eyebrow">For Student &amp; Emerging Artists</p>
+    <h1 class="hero-h1">HUMAN<br>ART.</h1>
+    <span class="hero-h1-sub">Seen. Verified. Celebrated.</span>
+    <div class="hero-foot">
+      <p class="hero-desc">TrueCraft is an interactive platform dedicated to student and emerging artists — to showcase original work, connect with real audiences, and get the recognition that AI can never replace.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn-big">Start Showcasing →</a>
+        <a href="#features" class="btn-ghost">Explore Platform</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span class="scroll-label">Scroll</span>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">Verified Human-Made Art</span>
+    <span class="ticker-item">Artist Profiles</span>
+    <span class="ticker-item">Creative Hive</span>
+    <span class="ticker-item">Fair Recognition</span>
+    <span class="ticker-item">Student Artists</span>
+    <span class="ticker-item">Commissions</span>
+    <span class="ticker-item">Original Work Only</span>
+    <span class="ticker-item">Iloilo · Cebu · Manila</span>
+    <span class="ticker-item">Verified Human-Made Art</span>
+    <span class="ticker-item">Artist Profiles</span>
+    <span class="ticker-item">Creative Hive</span>
+    <span class="ticker-item">Fair Recognition</span>
+    <span class="ticker-item">Student Artists</span>
+    <span class="ticker-item">Commissions</span>
+    <span class="ticker-item">Original Work Only</span>
+    <span class="ticker-item">Iloilo · Cebu · Manila</span>
+  </div>
+</div>
+
+<!-- MANIFESTO -->
+<section class="manifesto" id="about">
+  <div class="manifesto-label">
+    <div class="section-num"></div>
+    <div class="section-tag">The Problem</div>
+    <div class="section-title">THE AI INVASION</div>
+  </div>
+  <div class="manifesto-body">
+    <p class="manifesto-quote">"AI-generated art floods the market — cutting opportunities, threatening recognition, and devaluing human creativity."</p>
+    <p class="manifesto-text">80% of artists fear income loss. 60–70% of creative tasks are now automatable. 300 million jobs are at risk. The creative industry is at a turning point — and student artists are caught at the front lines.</p>
+    <p class="manifesto-text">TrueCraft exists to push back. We built a dedicated, verified platform where human-made art takes center stage — where originality is protected, artists are recognized, and creativity has a future.</p>
+    <div class="stat-row">
+      <div class="stat-cell"><span class="stat-big">80%</span><span class="stat-desc">of artists fear income loss due to AI-generated art</span></div>
+      <div class="stat-cell"><span class="stat-big">300M</span><span class="stat-desc">jobs at risk globally from creative automation</span></div>
+      <div class="stat-cell"><span class="stat-big">$2B</span><span class="stat-desc">annual global market for artists, growing at 6.3% CAGR</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY STRIP -->
+<!-- INSTRUCTIONS: Replace each src="PASTE_IMAGE_URL_HERE" with your actual image URLs from the web -->
+<div class="gallery-strip">
+  <div class="gallery-row">
+    <div class="gallery-item"><img src="https://graphicdesignjunction.com/wp-content/uploads/2015/07/digital+art+26.jpg" alt="Digital Illustration"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Digital Illustration</span></div>
+    <div class="gallery-item"><img src="https://www.wikihow.com/images/thumb/4/40/Oil-Paint-on-Canvas-Step-10.jpg/550px-nowatermark-Oil-Paint-on-Canvas-Step-10.jpg" alt="Oil on Canvas"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Oil on Canvas</span></div>
+    <div class="gallery-item"><img src="https://www.cgspectrum.com/hubfs/what-is-character-design-feat-1.jpg" alt="Character Design"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Character Design</span></div>
+    <div class="gallery-item"><img src="https://i0.wp.com/digital-photography-school.com/wp-content/uploads/2021/03/photography-projects-1001.jpg?fit=1500%2C1000&ssl=1" alt="Photography"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Photography</span></div>
+    <div class="gallery-item"><img src="https://cdn.mos.cms.futurecdn.net/v2/t:0,l:651,cw:2538,ch:1904,q:80,w:2538/L5tpUBL476RnFmdtNXRrnF.jpg" alt="Concept Art"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Concept Art</span></div>
+    <div class="gallery-item"><img src="https://i.ytimg.com/vi/s42NgD6PHNo/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCV4xf0GdyZyGYJNMsbVYcTEg7T9g" alt="Watercolor"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Watercolor</span></div>
+    <div class="gallery-item"><img src="https://graphicdesignjunction.com/wp-content/uploads/2015/07/digital+art+26.jpg" alt="Digital Illustration"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Digital Illustration</span></div>
+    <div class="gallery-item"><img src="https://www.wikihow.com/images/thumb/4/40/Oil-Paint-on-Canvas-Step-10.jpg/550px-nowatermark-Oil-Paint-on-Canvas-Step-10.jpg" alt="Oil on Canvas"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Oil on Canvas</span></div>
+    <div class="gallery-item"><img src="https://www.cgspectrum.com/hubfs/what-is-character-design-feat-1.jpg" alt="Character Design"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Character Design</span></div>
+    <div class="gallery-item"><img src="https://i0.wp.com/digital-photography-school.com/wp-content/uploads/2021/03/photography-projects-1001.jpg?fit=1500%2C1000&ssl=1" alt="Photography"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Photography</span></div>
+    <div class="gallery-item"><img src="https://cdn.mos.cms.futurecdn.net/v2/t:0,l:651,cw:2538,ch:1904,q:80,w:2538/L5tpUBL476RnFmdtNXRrnF.jpg" alt="Concept Art"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Concept Art</span></div>
+    <div class="gallery-item"><img src="https://i.ytimg.com/vi/s42NgD6PHNo/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCV4xf0GdyZyGYJNMsbVYcTEg7T9g" alt="Watercolor"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Watercolor</span></div>
+  </div>
+  <div class="gallery-row gallery-row-rev">
+    <div class="gallery-item"><img src="https://i.ytimg.com/vi/pyaZp7uaCwg/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCDVrvQmHBkfS7C022nXh5BOS5Org" alt="Pen & Ink"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Pen &amp; Ink</span></div>
+    <div class="gallery-item"><img src="https://youandigallery.com/wp-content/uploads/2023/09/rossi-del-vino-anchored-1.jpeg" alt="Mixed Media"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Mixed Media</span></div>
+    <div class="gallery-item"><img src="https://hatchstudios.com/wp-content/uploads/motion-design-style.jpg" alt="Motion Design"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Motion Design</span></div>
+    <div class="gallery-item"><img src="https://idsb.tmgrup.com.tr/ly/uploads/images/2024/10/16/350701.jpg" alt="Sculpture"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Sculpture</span></div>
+    <div class="gallery-item"><img src="https://studio.pinotspalette.com/naperville/images/nap_albumart.png" alt="Album Art"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Album Art</span></div>
+    <div class="gallery-item"><img src="https://cdn.sanity.io/images/599r6htc/regionalized/9b77f71ca678d0bb77964022ec889ceebbac344a-1440x720.png?w=1440&h=720&q=75&fit=max&auto=format" alt="Graphic Design"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Graphic Design</span></div>
+    <div class="gallery-item"><img src="https://i.ytimg.com/vi/pyaZp7uaCwg/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCDVrvQmHBkfS7C022nXh5BOS5Org" alt="Pen & Ink"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Pen &amp; Ink</span></div>
+    <div class="gallery-item"><img src="https://youandigallery.com/wp-content/uploads/2023/09/rossi-del-vino-anchored-1.jpeg" alt="Mixed Media"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Mixed Media</span></div>
+    <div class="gallery-item"><img src="https://hatchstudios.com/wp-content/uploads/motion-design-style.jpg" alt="Motion Design"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Motion Design</span></div>
+    <div class="gallery-item"><img src="https://idsb.tmgrup.com.tr/ly/uploads/images/2024/10/16/350701.jpg" alt="Sculpture"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Sculpture</span></div>
+    <div class="gallery-item"><img src="https://studio.pinotspalette.com/naperville/images/nap_albumart.png" alt="Album Art"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Album Art</span></div>
+    <div class="gallery-item"><img src="https://cdn.sanity.io/images/599r6htc/regionalized/9b77f71ca678d0bb77964022ec889ceebbac344a-1440x720.png?w=1440&h=720&q=75&fit=max&auto=format" alt="Graphic Design"><span class="vbadge">✓ Human</span><span class="gallery-item-label">Graphic Design</span></div>
+  </div>
+</div>
+
+<!-- FEATURES BENTO -->
+<section class="bento-section" id="features">
+  <div class="bento-header">
+    <div>
+      <div class="section-tag">The Platform</div>
+      <h2 class="bento-title">BUILT FOR<br>CREATORS.</h2>
+    </div>
+    <p class="bento-sub">Every feature designed to help human artists thrive in a world drowning in AI content.</p>
+  </div>
+  <div class="bento-grid">
+    <div class="bento-card bc-1" data-num="01">
+      <span class="bento-icon">🎨</span>
+      <h3 class="bento-name">Artist Profiles</h3>
+      <p class="bento-desc">Your personal gallery space — upload your artworks, write your story, and build a portfolio that grows as your career does.</p>
+      <div class="uvp-pill">✦ Portfolio-first</div>
+    </div>
+    <div class="bento-card bc-2" data-num="02">
+      <span class="bento-icon">✅</span>
+      <h3 class="bento-name">Verified Human Badge</h3>
+      <p class="bento-desc">Our exclusive badge certifies your work as human-made. Stand out in an AI-saturated market and give collectors the confidence to commission you.</p>
+    </div>
+    <div class="bento-card bc-3" data-num="03">
+      <span class="bento-icon">🐝</span>
+      <h3 class="bento-name">Creative Hive</h3>
+      <p class="bento-desc">Professors and mentors create dedicated hives for student projects — turning coursework into public portfolios.</p>
+    </div>
+    <div class="bento-card bc-4" data-num="04">
+      <span class="bento-icon">💸</span>
+      <h3 class="bento-name">Earn Real Income</h3>
+      <p class="bento-desc">Accept commissions, sell prints, and build a sustainable creative career — with artist-fair fees that respect your work.</p>
+    </div>
+    <div class="bento-card bc-5" data-num="05">
+      <span class="bento-icon">💬</span>
+      <h3 class="bento-name">Feedback &amp; Community</h3>
+      <p class="bento-desc">Receive meaningful feedback from peers, mentors, and collectors. Build real engagement — not empty vanity metrics — around your creative work and grow from genuine critique.</p>
+      <div class="uvp-pill">✦ Community-driven</div>
+    </div>
+    <div class="bento-card bc-6" data-num="06">
+      <span class="bento-icon">🔍</span>
+      <h3 class="bento-name">Smart Discovery</h3>
+      <p class="bento-desc">Our recommendation engine connects your art with the right audiences — clients who value authenticity above all else.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-tag">The Process</div>
+  <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,6rem);letter-spacing:0.02em;color:var(--cream);margin-top:0.5rem">HOW IT WORKS.</h2>
+  <div class="how-steps">
+    <div class="how-step">
+      <span class="step-index">1.</span>
+      <h3 class="step-title">Sign Up Free</h3>
+      <p class="step-desc">Create your TrueCraft account in minutes. Open to all student and emerging artists — no gatekeeping, no waiting lists.</p>
+      <span class="step-arrow">→</span>
+    </div>
+    <div class="how-step">
+      <span class="step-index">2.</span>
+      <h3 class="step-title">Build Your Profile</h3>
+      <p class="step-desc">Upload your artworks, craft your story, and set your creative identity. Your profile is your living portfolio.</p>
+      <span class="step-arrow">→</span>
+    </div>
+    <div class="how-step">
+      <span class="step-index">3.</span>
+      <h3 class="step-title">Get Verified</h3>
+      <p class="step-desc">Earn the human-made badge. Prove your originality in a market that's lost trust. Authenticity is your edge.</p>
+      <span class="step-arrow">→</span>
+    </div>
+    <div class="how-step">
+      <span class="step-index">4.</span>
+      <h3 class="step-title">Grow &amp; Earn</h3>
+      <p class="step-desc">Connect with audiences, accept commissions, and build the sustainable creative career you deserve.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="testi-header">
+    <div>
+      <div class="section-tag">Voices</div>
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,5rem);letter-spacing:0.03em;color:var(--cream)">REAL ARTISTS.<br>REAL NEED.</h2>
+    </div>
+  </div>
+  <div class="testi-grid">
+    <div class="testi">
+      <span class="testi-mark">"</span>
+      <p class="testi-quote">As an art student, I've always struggled to stand out online. I need a platform that actually values human creativity — not one that buries my work beneath AI-generated content.</p>
+      <div class="testi-author">
+        <div class="testi-avi">IQ</div>
+        <div><span class="testi-name">Iah Marie Z. Quilarto</span><span class="testi-role">Art Student · CPU Iloilo</span></div>
+      </div>
+    </div>
+    <div class="testi">
+      <span class="testi-mark">"</span>
+      <p class="testi-quote">The Creative Hive feature is exactly what educators need. A space where student projects gain real public visibility — not just a grade that disappears.</p>
+      <div class="testi-author">
+        <div class="testi-avi">NN</div>
+        <div><span class="testi-name">Natalie Grace Nequinto</span><span class="testi-role">Student · Creative Arts</span></div>
+      </div>
+    </div>
+    <div class="testi">
+      <span class="testi-mark">"</span>
+      <p class="testi-quote">The aesthetic is stunning and the platform is intuitive. Finally, a space where originality is celebrated rather than replicated by a machine in seconds.</p>
+      <div class="testi-author">
+        <div class="testi-avi">AC</div>
+        <div><span class="testi-name">Arielle Ricci Cagalawan</span><span class="testi-role">Emerging Artist · Iloilo</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-tag">Investment</div>
+  <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,6rem);letter-spacing:0.02em;color:var(--cream);margin-top:0.5rem">FAIR PRICING.<br>ARTIST-FIRST.</h2>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <span class="price-tag">Free Forever</span>
+      <div class="price-name">Explorer</div>
+      <div class="price-amount"><span class="price-curr">₱</span><span class="price-num">0</span><span class="price-per">/ month</span></div>
+      <ul class="price-features">
+        <li>Artist Profile &amp; Portfolio</li>
+        <li>Upload up to 10 Artworks</li>
+        <li>Community Feedback</li>
+        <li>Browse &amp; Discover</li>
+        <li>Join Creative Hives</li>
+      </ul>
+      <a href="#contact" class="price-btn btn-outline">Get Started →</a>
+    </div>
+    <div class="price-card featured">
+      <span class="price-tag">⭐ Most Popular</span>
+      <div class="price-name">Verified Artist</div>
+      <div class="price-amount"><span class="price-curr">₱</span><span class="price-num">200</span><span class="price-per">/ month</span></div>
+      <ul class="price-features">
+        <li>Everything in Explorer</li>
+        <li>Unlimited Artwork Uploads</li>
+        <li>Verified Human-Made Badge</li>
+        <li>Commission Marketplace Access</li>
+        <li>Priority in Discovery Algorithm</li>
+        <li>Analytics Dashboard</li>
+      </ul>
+      <a href="#contact" class="price-btn btn-solid">Join Now →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-finale">
+  <div class="cta-bg"></div>
+  <div class="cta-inner">
+    <p class="cta-pretitle">Your art is waiting to be seen</p>
+    <h2 class="cta-big">YOUR ART<br>IS REAL.</h2>
+    <span class="cta-ital">Let the world know it.</span>
+    <p class="cta-body">Join a growing community that champions human creativity. Showcase your work, earn your badge, build your career — before AI erases the distinction entirely.</p>
+    <div class="cta-actions">
+      <a href="#contact" class="btn-big">Create Your Profile →</a>
+      <a href="#features" class="btn-ghost">See All Features</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="contact-left">
+    <div class="section-tag">Connect</div>
+    <h2 class="contact-h2">GET IN<br>TOUCH.</h2>
+    <p style="font-size:0.95rem;color:var(--muted);line-height:1.75">Whether you're a student artist, educator, or someone who believes in human creativity — we want to hear from you.</p>
+    <div class="ci-list">
+      <div class="ci-item">
+        <span class="ci-icon">📍</span>
+        <div><span class="ci-label">Location</span><span class="ci-val">Central Philippine University<br>Jaro, Iloilo City, Philippines</span></div>
+      </div>
+      <div class="ci-item">
+        <span class="ci-icon">📧</span>
+        <div><span class="ci-label">Email</span><span class="ci-val">hello@truecraft.ph</span></div>
+      </div>
+      <div class="ci-item">
+        <span class="ci-icon">📱</span>
+        <div><span class="ci-label">Social Media</span><span class="ci-val">@TrueCraftPH<br>Instagram · Facebook · TikTok</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="contact-right">
+    <div class="section-tag">Drop a Message</div>
+    <h3 style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.04em;color:var(--cream);margin-bottom:2rem;margin-top:0.5rem">LET'S TALK.</h3>
+    <div class="form">
+      <div class="field"><label>Your Name</label><input type="text" placeholder="e.g. Helena Denato"></div>
+      <div class="field"><label>Email Address</label><input type="email" placeholder="your@email.com"></div>
+      <div class="field">
+        <label>I am a...</label>
+        <select>
+          <option>Student Artist</option>
+          <option>Emerging Professional Artist</option>
+          <option>Art Teacher / Professor</option>
+          <option>Art Collector / Client</option>
+          <option>Collaborator / Partner</option>
+        </select>
+      </div>
+      <div class="field"><label>Message</label><textarea rows="4" placeholder="Tell us about yourself or your interest in TrueCraft..."></textarea></div>
+      <button class="form-submit" onclick="this.textContent='Message Sent ✓';this.style.background='var(--green)';setTimeout(()=>{this.textContent='Send Message →';this.style.background='var(--red)'},3000)">Send Message →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">
+    <!-- LOGO PLACEHOLDER: Replace src with your actual logo file -->
+    <img src="img/TrueCraft_logo.png" alt="TrueCraft Logo" class="footer-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <span class="footer-logo-fallback">TRUE<span>C</span>RAFT</span>
+  </div>
+  <p class="footer-copy">© 2025 TrueCraft · Central Philippine University · Human Art Lives Here</p>
+  <ul class="footer-links">
+    <li><a href="#about">Manifesto</a></li>
+    <li><a href="#features">Platform</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</footer>
+
+<script>
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+});
+document.querySelectorAll('a,button,.bento-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.width='32px'; cursor.style.height='32px'; cursor.style.background='var(--gold)'; });
+  el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; cursor.style.background='var(--red)'; });
+});
+
+// Animated counters
+const counters = document.querySelectorAll('.stat-big');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !e.target.dataset.done) {
+      e.target.dataset.done = 1;
+      const raw = e.target.textContent.trim();
+      const hasM = raw.includes('M'), hasB = raw.includes('B'), hasPct = raw.includes('%');
+      const num = parseFloat(raw.replace(/[^0-9.]/g,''));
+      let n = 0; const step = num / 40;
+      const iv = setInterval(() => {
+        n = Math.min(n + step, num);
+        let d = n.toFixed(n < 10 ? 1 : 0);
+        if (hasM) d += 'M'; else if (hasB) d += 'B'; else if (hasPct) d += '%';
+        e.target.textContent = d;
+        if (n >= num) clearInterval(iv);
+      }, 30);
+    }
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => obs.observe(c));
+</script>
+</body>
+</html>
